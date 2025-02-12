@@ -1,29 +1,22 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiExtraModels, ApiQuery, getSchemaPath } from '@nestjs/swagger';
 
 export function ApiListQuery(filterDto: Type, orderDto: Type) {
   return applyDecorators(
+    ApiExtraModels(filterDto, orderDto),
     ApiQuery({
-      name: 'filter',
+      name: 'filters',
       required: false,
-      type: filterDto,
+      type: 'object',
+      style: 'deepObject',
+      schema: { $ref: getSchemaPath(filterDto) },
     }),
     ApiQuery({
-      name: 'order',
+      name: 'orders',
       required: false,
-      type: orderDto,
-    }),
-    ApiQuery({
-      name: 'page',
-      required: false,
-      example: 1,
-      type: Number,
-    }),
-    ApiQuery({
-      name: 'limit',
-      required: false,
-      example: 10,
-      type: Number,
+      type: 'object',
+      style: 'deepObject',
+      schema: { $ref: getSchemaPath(orderDto) },
     }),
   );
 }

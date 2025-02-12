@@ -1,15 +1,16 @@
-import { AuthController } from './auth.controller';
+import { AuthController } from './controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../user/users.module';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CONFIG_NAMES } from 'src/shared/constants/config.constant';
-import { AuthService } from './auth.service';
 import { PasswordModule } from '../password/password.module';
-import { JwtAuthGuard } from './jwt.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { MailModule } from '../mail/mail.module';
+import { AuthService } from './services/auth.service';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { APP_GUARD } from '@nestjs/core';
     UsersModule,
     PasswordModule,
     PassportModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [
