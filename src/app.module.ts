@@ -9,9 +9,24 @@ import { ClsModule } from 'nestjs-cls';
 import { RolesModule } from './modules/roles/roles.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
+import { TransformResponseInterceptor } from './shared/interceptors/transform-response.interceptor';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { CatchEverythingFilter } from './shared/filters/catch-everything.filter';
+import { LoggerModule } from 'nestjs-pino';
+import { BaseEntitySubscriber } from './shared/subscribers/base-entity.subscriber';
 
 @Module({
   imports: [
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            singleLine: true,
+          },
+        },
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [DB_CONFIG],
@@ -33,6 +48,17 @@ import { PermissionsModule } from './modules/permissions/permissions.module';
     MailModule,
     RolesModule,
     PermissionsModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: CatchEverythingFilter,
+    },
+    BaseEntitySubscriber,
   ],
 })
 export class AppModule {}

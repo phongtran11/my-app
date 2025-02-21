@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ClsService } from 'nestjs-cls';
-import { UsersRepository } from '../../user/users.repository';
 import { PasswordService } from '../../password/password.service';
 import { MailService } from '../../mail/mail.service';
 import { LoginReqDto } from '../dtos/login.dto';
@@ -13,6 +12,7 @@ import { BadRequestException } from '@nestjs/common';
 import { USER_STATUSES } from '../../user/constants/user_status.constant';
 import { User } from 'src/modules/user/entities/user.entity';
 import { AuthService } from '../services/auth.service';
+import { UsersRepository } from 'src/modules/user/repository/users.repository';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -28,13 +28,14 @@ describe('AuthService', () => {
     password: 'hashedPassword',
     status: USER_STATUSES.ACTIVE,
     fullName: 'Test User',
-    roles: [],
+    roleId: '1',
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: new Date(),
     createdBy: '1',
     updatedBy: '1',
     deletedBy: '1',
+    role: null,
   };
 
   const registerReqDto: RegisterReqDto = {
@@ -164,8 +165,7 @@ describe('AuthService', () => {
         email: 'test@example.com',
       };
       const result = await authService.verifyEmail(verifyEmailReqDto);
-
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual(true);
     });
   });
 

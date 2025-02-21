@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
+import { BaseSuccessResponseDto } from 'src/shared/bases/base-response.dto';
 import { Match } from 'src/shared/decorators/match.decorator';
 import { TokensResDto } from './token.dto';
 
@@ -11,11 +12,11 @@ export class VerifyEmailReqDto {
   email: string;
 }
 
-export class VerifyEmailResDto {
+export class VerifyEmailResDto extends BaseSuccessResponseDto<boolean> {
   @ApiProperty({
-    example: 'john@yopmail.com',
+    example: true,
   })
-  email: string;
+  data: true;
 }
 
 export class RegisterReqDto {
@@ -43,4 +44,9 @@ export class RegisterReqDto {
   confirmPassword: string;
 }
 
-export class RegisterResDto extends TokensResDto {}
+export class RegisterResDto extends BaseSuccessResponseDto<TokensResDto> {
+  @ApiProperty({
+    type: TokensResDto,
+  })
+  data: TokensResDto;
+}

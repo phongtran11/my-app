@@ -7,22 +7,15 @@ import { MailService } from 'src/modules/mail/mail.service';
 import { PasswordService } from 'src/modules/password/password.service';
 import { USER_STATUSES } from 'src/modules/user/constants/user_status.constant';
 import { User } from 'src/modules/user/entities/user.entity';
-import { UsersRepository } from 'src/modules/user/users.repository';
 import { JWT_USER } from 'src/shared/constants/cls.constant';
 import { CONFIG_NAMES } from 'src/shared/constants/config.constant';
 import { ERROR_MESSAGES } from 'src/shared/constants/error-messages.constant';
 import { JwtUser } from 'src/shared/types/cls.type';
-import { LoginReqDto, LoginResDto } from '../dtos/login.dto';
-import {
-  RefreshTokenReqDto,
-  RefreshTokenResDto,
-} from '../dtos/refresh-token.dto';
-import {
-  VerifyEmailReqDto,
-  VerifyEmailResDto,
-  RegisterReqDto,
-  RegisterResDto,
-} from '../dtos/register.dto';
+import { LoginReqDto } from '../dtos/login.dto';
+import { RefreshTokenReqDto } from '../dtos/refresh-token.dto';
+import { VerifyEmailReqDto, RegisterReqDto } from '../dtos/register.dto';
+import { UsersRepository } from 'src/modules/user/repository/users.repository';
+import { TokensResDto } from '../dtos/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +30,7 @@ export class AuthService {
     private readonly clsService: ClsService,
   ) {}
 
-  async login(loginReqDto: LoginReqDto): Promise<LoginResDto> {
+  async login(loginReqDto: LoginReqDto): Promise<TokensResDto> {
     // find user with email
     const user = await this.userRepository.findOneByEmail(loginReqDto.email);
 
@@ -52,12 +45,10 @@ export class AuthService {
     const tokens = this.generateToken(user);
 
     // return tokens as response
-    return plainToInstance(LoginResDto, tokens);
+    return plainToInstance(TokensResDto, tokens);
   }
 
-  async verifyEmail(
-    verifyEmailReqDto: VerifyEmailReqDto,
-  ): Promise<VerifyEmailResDto> {
+  async verifyEmail(verifyEmailReqDto: VerifyEmailReqDto): Promise<boolean> {
     // check if user with email exists
     const isEmailExists = await this.userRepository.isEmailExists(
       verifyEmailReqDto.email,
@@ -85,12 +76,10 @@ export class AuthService {
       tokens.accessToken,
     );
 
-    return {
-      email: verifyEmailReqDto.email,
-    };
+    return true;
   }
 
-  async register(registerReqDto: RegisterReqDto): Promise<RegisterResDto> {
+  async register(registerReqDto: RegisterReqDto): Promise<TokensResDto> {
     // get user from storage
     const jwtUser = this.clsService.get<JwtUser>(JWT_USER);
 
@@ -126,12 +115,12 @@ export class AuthService {
     const tokens = this.generateToken(user);
 
     // return tokens as response
-    return plainToInstance(RegisterResDto, tokens);
+    return plainToInstance(TokensResDto, tokens);
   }
 
   async refreshToken(
     refreshTokenReqDto: RefreshTokenReqDto,
-  ): Promise<RefreshTokenResDto> {
+  ): Promise<TokensResDto> {
     const { refreshToken } = refreshTokenReqDto;
 
     // verify refresh token
@@ -144,7 +133,7 @@ export class AuthService {
     const tokens = this.generateToken(user);
 
     // return tokens as response
-    return plainToInstance(RefreshTokenResDto, tokens);
+    return plainToInstance(TokensResDto, tokens);
   }
 
   async validatePassword(password: string, passwordHash: string) {

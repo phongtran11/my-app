@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsStrongPassword } from 'class-validator';
+import { BaseSuccessResponseDto } from 'src/shared/bases/base-response.dto';
 import { TokensResDto } from './token.dto';
 
 export class LoginReqDto {
@@ -21,4 +22,9 @@ export class LoginReqDto {
   password: string;
 }
 
-export class LoginResDto extends TokensResDto {}
+export class LoginResDto extends BaseSuccessResponseDto<TokensResDto> {
+  @ApiProperty({
+    type: TokensResDto,
+  })
+  data: TokensResDto;
+}

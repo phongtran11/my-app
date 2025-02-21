@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/shared/bases/base.entity';
 import { DB_TABLES } from 'src/shared/constants/db-tables.constant';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { USER_STATUSES } from '../constants/user_status.constant';
 import { UserStatusesEnum } from '../types/user_status.type';
 import { Role } from 'src/modules/roles/entities/role.entity';
@@ -40,16 +40,16 @@ export class User extends BaseEntity {
   })
   fullName: string;
 
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable({
-    joinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'role_id',
-      referencedColumnName: 'id',
-    },
+  @Column({
+    type: 'bigint',
+    nullable: true,
+    name: 'role_id',
   })
-  roles: Role[];
+  roleId: string;
+
+  @ManyToOne(() => Role, (role) => role.users)
+  @JoinColumn({
+    name: 'role_id',
+  })
+  role: Role;
 }

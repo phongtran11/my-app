@@ -1,7 +1,7 @@
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDirectionEnum } from 'src/shared/types/query.type';
+import { User } from '../entities/user.entity';
 
 export class UsersRepository extends Repository<User> {
   constructor(

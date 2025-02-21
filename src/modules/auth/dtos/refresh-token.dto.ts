@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { LoginResDto } from './login.dto';
-
+import { BaseSuccessResponseDto } from 'src/shared/bases/base-response.dto';
+import { TokensResDto } from './token.dto';
 export class RefreshTokenReqDto {
   @ApiProperty({
     example:
@@ -11,4 +11,9 @@ export class RefreshTokenReqDto {
   refreshToken: string;
 }
 
-export class RefreshTokenResDto extends LoginResDto {}
+export class RefreshTokenResDto extends BaseSuccessResponseDto<TokensResDto> {
+  @ApiProperty({
+    type: TokensResDto,
+  })
+  data: TokensResDto;
+}

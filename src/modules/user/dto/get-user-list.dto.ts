@@ -1,11 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { IsEnum, IsOptional, ValidateNested } from 'class-validator';
+import { BaseListResponseDto } from 'src/shared/bases/base-list.dto';
 import {
-  PaginationResDto,
-  BaseResDto,
-  BasePaginationReqDto,
-} from 'src/shared/bases/base.dto';
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shared/bases/base-pagination.dto';
+import {
+  BaseResponseDto,
+  BaseSuccessResponseDto,
+} from 'src/shared/bases/base-response.dto';
 import { ORDER_DIRECTION } from 'src/shared/constants/query.constant';
 import { OrderDirectionEnum } from 'src/shared/types/query.type';
 
@@ -22,7 +26,7 @@ export class GetUserListOrderDto {
   createdAt?: OrderDirectionEnum;
 }
 
-export class GetUserListQueryDto extends BasePaginationReqDto {
+export class GetUserListQueryDto extends BasePaginationRequestDto {
   @ApiPropertyOptional({ type: GetUserListFilterDto })
   @IsOptional()
   @Type(() => GetUserListFilterDto)
@@ -37,24 +41,41 @@ export class GetUserListQueryDto extends BasePaginationReqDto {
 }
 
 @Exclude()
-export class UserListItem extends BaseResDto {
+export class UserListItemDto extends BaseResponseDto {
   @ApiProperty({ example: 'john' })
   @Expose()
   email: string;
 }
 
-@Exclude()
-export class GetUserListResDto extends PaginationResDto {
+export class UserListDto
+  implements
+    BaseListResponseDto<
+      GetUserListFilterDto,
+      GetUserListOrderDto,
+      UserListItemDto[]
+    >
+{
   @ApiProperty({ type: GetUserListFilterDto })
-  @Expose()
-  filters?: GetUserListFilterDto;
+  @Type(() => GetUserListFilterDto)
+  filters: GetUserListFilterDto;
 
   @ApiProperty({ type: GetUserListOrderDto })
-  @Expose()
-  orders?: GetUserListOrderDto;
+  @Type(() => GetUserListOrderDto)
+  orders: GetUserListOrderDto;
 
-  @ApiProperty({ type: UserListItem, isArray: true })
-  @Expose()
-  @Type(() => UserListItem)
-  items: UserListItem[];
+  @ApiProperty({ type: BasePaginationResponseDto })
+  @Type(() => BasePaginationResponseDto)
+  pagination: BasePaginationResponseDto;
+
+  @ApiProperty({
+    type: UserListItemDto,
+    isArray: true,
+  })
+  @Type(() => UserListItemDto)
+  items: UserListItemDto[];
+}
+
+export class GetUserListDto extends BaseSuccessResponseDto<UserListDto> {
+  @ApiProperty({ type: UserListDto })
+  data: UserListDto;
 }

@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { LoginResDto, LoginReqDto } from '../dtos/login.dto';
 import {
@@ -13,6 +13,8 @@ import {
   VerifyEmailResDto,
 } from '../dtos/register.dto';
 import { AuthService } from '../services/auth.service';
+import { TokensResDto } from '../dtos/token.dto';
+import { BaseErrorResponseDto } from 'src/shared/bases/base-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,7 +25,10 @@ export class AuthController {
   @ApiCreatedResponse({
     type: LoginResDto,
   })
-  login(@Body() loginReqDto: LoginReqDto): Promise<LoginResDto> {
+  @ApiBadRequestResponse({
+    type: BaseErrorResponseDto,
+  })
+  login(@Body() loginReqDto: LoginReqDto): Promise<TokensResDto> {
     return this.authService.login(loginReqDto);
   }
 
@@ -32,9 +37,10 @@ export class AuthController {
   @ApiCreatedResponse({
     type: VerifyEmailResDto,
   })
-  verifyEmail(
-    @Body() verifyEmailReqDto: VerifyEmailReqDto,
-  ): Promise<VerifyEmailResDto> {
+  @ApiBadRequestResponse({
+    type: BaseErrorResponseDto,
+  })
+  verifyEmail(@Body() verifyEmailReqDto: VerifyEmailReqDto) {
     return this.authService.verifyEmail(verifyEmailReqDto);
   }
 
@@ -42,7 +48,10 @@ export class AuthController {
   @ApiCreatedResponse({
     type: RegisterResDto,
   })
-  register(@Body() registerReqDto: RegisterReqDto): Promise<RegisterResDto> {
+  @ApiBadRequestResponse({
+    type: BaseErrorResponseDto,
+  })
+  register(@Body() registerReqDto: RegisterReqDto): Promise<TokensResDto> {
     return this.authService.register(registerReqDto);
   }
 
@@ -51,9 +60,12 @@ export class AuthController {
   @ApiCreatedResponse({
     type: RefreshTokenResDto,
   })
+  @ApiBadRequestResponse({
+    type: BaseErrorResponseDto,
+  })
   refreshToken(
     @Body() refreshTokenReqDto: RefreshTokenReqDto,
-  ): Promise<RefreshTokenResDto> {
+  ): Promise<TokensResDto> {
     return this.authService.refreshToken(refreshTokenReqDto);
   }
 }
